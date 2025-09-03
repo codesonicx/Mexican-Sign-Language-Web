@@ -1,0 +1,65 @@
+---
+interface buttonProps {
+    text?: string;
+    url?: URL;
+    variant?: string;
+}
+const {text, url, variant = "default"} = Astro.props
+---
+<button  class={`btn ${variant}`}>
+    <slot />
+    {text}
+</button>
+
+<style>
+    /* Common Style Between all Buttons */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+
+        padding: 8px 14px;
+        border: solid 1px var(--border);
+        border-radius: 8px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+
+        font-weight: 500;
+
+        min-width: 100px;
+
+        transition: all 0.2s ease;
+    }
+
+    /* Variants */
+    .primary {
+        background-color: var(--primary);
+        color: var(--primary-foreground);
+        font-size: 1.125rem;
+    }
+
+    .primary:hover {
+        background-color: color-mix(in oklab, var(--primary) 90%, transparent);
+    }
+
+    .secondary {
+        background-color: var(--primary-foreground);
+        color: var(--foreground);
+        font-size: 1.125rem;
+    }
+
+    .secondary:hover {
+        background-color: var(--secondary);
+        color: var(--primary-foreground);
+    }
+
+    .default {
+        background-color: var(--primary-foreground);
+        color: var(--foreground);
+    }
+
+    .default:hover {
+        background-color: var(--secondary);
+        color: var(--primary-foreground);
+    }
+</style>
