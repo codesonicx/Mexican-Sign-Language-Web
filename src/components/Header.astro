@@ -1,5 +1,5 @@
 ---
-import Button from '../components/Button.astro';
+import LinkButton from '../components/LinkButton.astro';
 ---
 
 <header>
@@ -13,7 +13,7 @@ import Button from '../components/Button.astro';
             <a href=#community>Community</a>
             <a href=#about>About</a>
         </div>
-        <Button text="Log In"></Button>
+        <LinkButton text="Log In"></LinkButton>
     </ul>
 </header>
 
@@ -64,5 +64,14 @@ import Button from '../components/Button.astro';
 
     a:hover {
         color: var(--foreground);
+    }
+
+    @media (max-width: 640px) {
+        header ul {
+            padding: 16px;
+        }
+        .nav-links {
+            flex-wrap: wrap;
+        }
     }
 </style>
