@@ -1,0 +1,68 @@
+---
+import Button from '../components/Button.astro';
+---
+
+<header>
+    <ul>
+        <div class="logo">
+            <span>LSM</span>
+            <p>Mexican Sign Language</p>
+        </div>
+        <div class="nav-links">
+            <a href=#features>Features</a>
+            <a href=#community>Community</a>
+            <a href=#about>About</a>
+        </div>
+        <Button text="Log In"></Button>
+    </ul>
+</header>
+
+<style>
+    header {
+        height: 68px;
+        padding: 16px 70px;
+        border-bottom: solid 1px var(--border);
+        margin: 0 auto;
+        
+    }
+
+    ul {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 1200px;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+    }
+
+    span {
+        background-color: var(--foreground);
+        color: var(--primary-foreground);
+        padding: 10px;
+        margin-right: 10px;
+        border-radius: 8px;
+        font-weight: 700;
+    }
+
+    p {
+        font-weight: bold;
+        color: var(--foreground);
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 30px;
+    }
+
+    a {
+        text-decoration: none;
+        color: var(--muted-foreground);
+    }
+
+    a:hover {
+        color: var(--foreground);
+    }
+</style>

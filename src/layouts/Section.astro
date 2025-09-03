@@ -1,0 +1,30 @@
+---
+interface SectionContainerProps {
+    id?: string;
+    className?: string;
+}
+
+const { id, className = ""} = Astro.props
+---
+<section id={id} class={className}>
+    <div class="container">
+        <slot />
+    </div>
+</section>
+
+
+<style>
+    section {
+        padding: 80px 16px;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;     /* Center the content using the block system */
+        text-align: center;
+    }
+
+    .bg-green {
+        background-color: var(--card);
+    }
+</style>

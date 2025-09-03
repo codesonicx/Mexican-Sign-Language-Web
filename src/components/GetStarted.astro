@@ -1,0 +1,38 @@
+---
+import Button from '../components/Button.astro'
+import Upload from '../assets/upload.svg'
+---
+
+<h2>Start Recognizing Gestures Today</h2>
+<p>Join dozens of users who are already using LSM to improve inclusive communication.</p>
+
+<div class="btn-container">
+    <Button text="Try Now for Free" variant="primary">
+        <Upload class="upload-icon"/>
+    </Button>
+    <Button text="Learn More" variant="secondary"/>
+</div>
+
+<style>
+    h2 {
+        font-size: 2.5rem;
+        color: var(--foreground);
+        margin-bottom: 1rem;
+    }
+
+    p {
+        font-size: 1.25rem;
+        color: var(--muted-foreground);
+        margin-bottom: 2.5rem;
+    }
+
+    .btn-container {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .upload-icon {
+        width: 20px;
+    }
+</style>

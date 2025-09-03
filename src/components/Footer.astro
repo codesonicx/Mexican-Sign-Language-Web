@@ -1,0 +1,144 @@
+---
+const {
+    brand = { abbr: "LSM", name: "Mexican Sign Language", tagline: "Technology at the service of inclusion and accessible communication." },
+    year = new Date().getFullYear(),
+} = Astro.props;
+---
+
+<footer id="about" class="site-footer" role="contentinfo">
+    <div class="container">
+        <div class="grid">
+            <!-- Brand -->
+            <div class="brand">
+            <span class="logo" aria-hidden="true">{brand.abbr}</span>
+            <div>
+                <p class="brand-name">{brand.name}</p>
+                <p class="brand-tagline">{brand.tagline}</p>
+            </div>
+        </div>
+
+    <!-- Column: Product -->
+    <nav aria-labelledby="f-product" class="column">
+        <h3 id="f-product">Product</h3>
+        <ul class="links">
+            <li><a href="#">Features</a></li>
+            <li><a href="#">Prices</a></li>
+            <li><a href="#">API</a></li>
+        </ul>
+    </nav>
+
+    <!-- Column: Resources -->
+    <nav aria-labelledby="f-resources" class="column">
+        <h3 id="f-resources">Resources</h3>
+        <ul class="links">
+            <li><a href="#">Documentation</a></li>
+            <li><a href="#">Tutorials</a></li>
+            <li><a href="#">Blog</a></li>
+        </ul>
+    </nav>
+
+    <!-- Column: Support -->
+    <nav aria-labelledby="f-support" class="column">
+        <h3 id="f-support">Support</h3>
+        <ul class="links">
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Contact</a></li>
+            <li><a href="#">Community</a></li>
+        </ul>
+        </nav>
+    </div>
+
+    <div class="legal">© {year} {brand.name}. Must rights reserved.</div>
+    </div>
+</footer>
+
+<style>
+    .site-footer {
+        background-color: var(--card);
+        border-top: 1px solid var(--border);
+    }
+
+    /* Contenedor centrado */
+    .container {
+        max-width: 72rem;
+        margin: 0 auto;
+        padding: 48px 16px 24px;
+    }
+
+    /* Grid principal (marca + 3 columnas) */
+    .grid {
+        display: grid;
+        gap: 32px;
+        grid-template-columns: 1fr; /* móvil */
+        align-items: start;
+    }
+
+    @media (min-width: 768px) {
+        .grid { grid-template-columns: 2fr 1fr 1fr 1fr; }
+    }
+
+    /* Marca */
+    .brand {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 12px;
+    }
+
+    .logo {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 36px;
+        border-radius: 8px;
+        background: var(--foreground);
+        color: var(--primary-foreground);
+        font-weight: 700;
+    }
+
+    .brand-name {
+        margin: 0;
+        color: var(--foreground);
+        font-weight: 700;
+    }
+
+    .brand-tagline {
+        margin: 8px 0 0;
+        color: var(--muted-foreground);
+        grid-column: 1 / -1;
+        max-width: 34ch;
+        text-wrap: balance;
+    }
+
+    /* Columnas y enlaces */
+    .column h3 {
+        margin: 0 0 12px;
+        color: var(--foreground);
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .links a {
+        display: block;
+        padding: 4px 0;
+        color: var(--muted-foreground);
+        text-decoration: none;
+    }
+    .links a:hover { color: var(--foreground); }
+
+    /* Legal */
+    .legal {
+        border-top: 1px solid var(--border);
+        margin-top: 24px;
+        padding-top: 16px;
+        text-align: center;
+        color: var(--muted-foreground);
+        font-size: 0.875rem;
+    }
+</style>

@@ -1,0 +1,67 @@
+---
+import Button from "./Button.astro"
+import bolt from "../assets/bolt.svg"
+import UploadIcon from "../assets/upload.svg"
+import CameraIcon from "../assets/camera.svg"
+---
+
+<div class="ai-container">
+    <img src={bolt.src} alt="Bolt logo in SVG format to stand out in AI."/>
+    <span>Powered by AI</span>
+</div>
+
+<h1>Recognition of Mexican Sign Language with Artificial Intelligence</h1>
+<p>Upload images of hand gestures and let our AI analyze them to recognize letters, words, and expressions in Mexican Sign Language.</p>
+
+<div class="button-group">
+    <Button text="Upload Image" variant="primary">
+        <UploadIcon aria-hidden="true"/>
+    </Button>
+    <Button text="See Demo" variant="secondary">
+        <CameraIcon aria-hidden="true"/>
+    </Button>
+</div>
+
+<style>
+
+    h1 {
+        color: var(--foreground);
+        font-size: 3.75rem;
+        line-height: 4rem;
+        margin-bottom: 24px;
+
+    }
+    p {
+        color: var(--muted-foreground);
+        margin-bottom: 32px;
+        font-size: 1.25rem;
+        line-height: 2rem;
+    }
+
+    h1, p {
+        text-align: center;
+        text-wrap: balance;
+    }
+    .ai-container {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--secondary);
+        padding: 3px 8px;
+        border-radius: 4px;
+        gap: 4px;
+        margin-bottom: 16px;
+    }
+
+    .ai-container span {
+        color: var(--secondary-foreground);
+        font-size: 0.75rem;
+    }
+
+    .button-group {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 16px;
+    }
+</style>

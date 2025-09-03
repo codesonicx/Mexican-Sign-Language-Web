@@ -1,0 +1,90 @@
+---
+import Users from "../assets/users.svg"
+import Heart from "../assets/heart.svg"
+import Button from "./Button.astro"
+---
+
+<h2>Building Bridges of Communication</h2>
+<p class="lead">Our mission is to make Mexican Sign Language more accessible<br> and promote inclusion in our society.</p>
+
+<ul class="cards">
+    <li class="card">
+        <div class="icon-text">
+            <div class="icon-container">
+                <Users />
+            </div>
+            <h3>Intelligent Recognition</h3>
+        </div>
+        <p>AI algorithms specifically trained to recognize Mexican Sign Language gestures with high accuracy.</p>
+    </li>
+
+    <li class="card">
+        <div class="icon-text">
+            <div class="icon-container">
+                <Heart/>
+            </div>
+            <h3>For Families and Educators</h3>
+        </div>
+        <p>Simply upload an image from your device and get instant results. No technical expertise required. For anyone, anywhere.</p>
+    </li>
+</ul>
+
+<Button text="Join Our Community" variant="primary"></Button>
+<style>
+    h2 {
+        color: var(--foreground);
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    h3, p {
+        color: var(--muted-foreground);
+    }
+
+    .lead {
+        font-size: 1.25rem;
+        text-wrap: balance;
+    }
+
+    .icon-text {
+        display: flex;
+        align-items: center;
+    }
+
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 430px));
+        gap: 2rem;
+        list-style: none;
+        text-align: left;
+        
+        margin-top: 4rem;
+        margin-bottom: 3rem;
+        justify-content: center;
+    }
+
+    .card {
+        padding: 24px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 4px 0 rgb(0 0 0 / 0.1);
+        text-wrap: pretty;
+    }
+    .icon-container {
+        background: color-mix(in oklab, var(--secondary) 10%, transparent);
+        border-radius: 100%;
+        width: 3rem;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        color: var(--accent);
+    }
+
+    .cards .card > p {
+        font-size: 0.90rem;
+        line-height: 1.4;
+        margin-top: 1.4rem;
+    }
+</style>

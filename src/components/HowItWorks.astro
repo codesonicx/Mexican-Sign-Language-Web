@@ -1,0 +1,85 @@
+---
+
+---
+
+<h2>How does it work?</h2>
+<p class="lead">Three simple steps to recognize sign language gestures</p>
+
+<ul class="cards">
+    <li class="card">
+        <div class="icon-container">
+            1
+        </div>
+        <h3>Upload your image</h3>
+        <p>Select a clear photo of the gesture you want to analyze</p>
+    </li>
+
+    <li class="card">
+        <div class="icon-container">
+            2
+        </div>
+        <h3>AI Analyzes</h3>
+        <p>Our artificial intelligence processes and recognizes the gesture</p>
+    </li>
+
+    <li class="card">
+        <div class="icon-container">
+            3
+        </div>
+        <h3>Get Results</h3>
+        <p>Receive the translation and meaning of the identified gesture</p>
+    </li>
+</ul>
+
+<style>
+    h2 {
+        color: var(--foreground);
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    h3, p {
+        color: var(--muted-foreground);
+    }
+
+    .lead {
+        font-size: 1.25rem;
+    }
+
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        list-style: none;
+        text-align: center;
+        
+        margin-top: 4rem;
+    }
+
+    .card {
+        padding: 24px;
+        text-wrap: pretty;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .icon-container {
+        background: var(--secondary);
+        border-radius: 100%;
+        width: 4rem;
+        height: 4rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        color: var(--accent-foreground);
+        font-size: x-large;
+        font-weight: bold;
+    }
+
+    .cards .card > p {
+        font-size: 0.90rem;
+        line-height: 1.4;
+        margin-top:4px;
+    }
+</style>
