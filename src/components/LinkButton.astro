@@ -1,24 +1,30 @@
 ---
-interface ButtonProps {
+interface LinkButtonProps {
     text?: string;
-    type?: 'button' | 'submit' | 'reset';
+    href: string;
     variant?: 'primary' | 'secondary' | 'default';
-    disabled?: boolean;
+    target?: '_self' | '_blank';
+    rel?: string;
 }
-const props = Astro.props as ButtonProps;
+const props = Astro.props as LinkButtonProps;
 
 const text    = props.text;
-const type    = props.type || 'button';
+const href    = props.href;
 const variant = props.variant || 'default';
-const disabled = !!props.disabled;
+const target  = props.target;
+let   rel     = props.rel;
+
+if (target === '_blank' && !rel) {
+    rel = 'noopener noreferrer';
+}
 ---
-<button type={type} class={`btn ${variant}`} disabled={disabled}>
+<a href={href} target={target} rel={rel} class={`btn ${variant}`}>
     <slot />{text}
-</button>
+</a>
 
 <style>
     .btn {
-        display: inline-flex; 
+        display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
@@ -29,6 +35,7 @@ const disabled = !!props.disabled;
         font-weight: 500;
         min-width: 100px;
         transition: all .2s ease;
+        text-decoration: none;
         cursor: pointer;
     }
     .primary {
@@ -39,7 +46,6 @@ const disabled = !!props.disabled;
     .primary:hover {
         background: color-mix(in oklab, var(--primary) 90%, transparent);
     }
-
     .secondary {
         background: var(--primary-foreground);
         color: var(--foreground);
@@ -57,8 +63,4 @@ const disabled = !!props.disabled;
         background: var(--secondary);
         color: var(--primary-foreground);
     }
-    .btn:disabled {
-        opacity: .6;
-        pointer-events: none;
-        }
 </style>

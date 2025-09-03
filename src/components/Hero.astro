@@ -1,5 +1,6 @@
 ---
 import Button from "./Button.astro"
+import LinkButton from "./LinkButton.astro"
 import bolt from "../assets/bolt.svg"
 import UploadIcon from "../assets/upload.svg"
 import CameraIcon from "../assets/camera.svg"
@@ -17,9 +18,9 @@ import CameraIcon from "../assets/camera.svg"
     <Button text="Upload Image" variant="primary">
         <UploadIcon aria-hidden="true"/>
     </Button>
-    <Button text="See Demo" variant="secondary">
+    <LinkButton href="/camera" text="See Demo" variant="secondary">
         <CameraIcon aria-hidden="true"/>
-    </Button>
+    </LinkButton>
 </div>
 
 <style>
