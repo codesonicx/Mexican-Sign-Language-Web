@@ -1,0 +1,54 @@
+@font-face {
+    font-family: Geist Sans;
+    src: url("/Geist[wght].ttf") format("truetype-variations");
+    font-weight: 50 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(.35 .08 200);
+    --card: oklch(.98 .02 200);
+    --card-foreground: oklch(.45 .02 220);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(.35 .08 200);
+    --primary: oklch(.35 .08 200);
+    --primary-foreground: oklch(1 0 0);
+    --secondary: oklch(.6 .15 270);
+    --secondary-foreground: oklch(1 0 0);
+    --muted: oklch(.99 .01 220);
+    --muted-foreground: oklch(.45 .02 220);
+    --accent: oklch(.6 .15 270);
+    --accent-foreground: oklch(1 0 0);
+    --destructive: oklch(.577 .245 27.325);
+    --destructive-foreground: oklch(1 0 0);
+    --border: oklch(.88 .01 220);
+    --input: oklch(1 0 0);
+    --ring: oklch(.6 .15 270 / .5);
+    --chart-1: oklch(.6 .15 270);
+    --chart-2: oklch(.55 .12 60);
+    --chart-3: oklch(.35 .08 200);
+    --chart-4: oklch(.577 .245 27.325);
+    --chart-5: oklch(.7 .15 80);
+    --radius: .5rem;
+    --sidebar: oklch(.99 .01 220);
+    --sidebar-foreground: oklch(.45 .02 220);
+    --sidebar-primary: oklch(.35 .08 200);
+    --sidebar-primary-foreground: oklch(1 0 0);
+    --sidebar-accent: oklch(.6 .15 270);
+    --sidebar-accent-foreground: oklch(1 0 0);
+    --sidebar-border: oklch(.88 .01 220);
+    --sidebar-ring: oklch(.6 .15 270 / .5);
+
+    font-family: "Geist Sans";
+}
+/* CSS Reset for user client */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
