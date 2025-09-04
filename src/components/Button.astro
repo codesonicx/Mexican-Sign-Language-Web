@@ -16,7 +16,7 @@ const disabled = !!props.disabled;
 ---
 <button id={id} type={type} class={`btn ${variant}`} disabled={disabled}>
     <slot />
-    {text}
+    <span class="label">{text}</span>
 </button>
 
 <style>
