@@ -86,3 +86,31 @@ import SignReference from '../components/SignReference.astro'
         line-height: 1;
     }
 </style>
+
+
+<script>
+    const fieldset = document.querySelector('.gesture-box') as HTMLFieldSetElement;
+    const selectedEl = document.getElementById('signSelected') as HTMLParagraphElement;
+    const imgEl = document.getElementById('signImage') as HTMLImageElement;
+    const descEl = document.getElementById('signDescription') as HTMLParagraphElement;
+    // const imgEl = document.getElementById('signImage'); // si usas imagen
+
+    function render(letter: string) {
+      if (selectedEl) selectedEl.textContent = `Letter: ${letter}`;
+      if (imgEl) imgEl.src = `/hand-references/${encodeURIComponent(letter)}.png`;
+      if (imgEl) imgEl.alt = `Sign ${letter}`;
+      if (descEl) descEl.textContent = `Reference image of the sign for the letter ${letter}`;
+      // Si luego usas imágenes: imgEl.src = `/signs/${letter}.png`;
+    }
+
+    // cambio al hacer click/tecla
+    fieldset.addEventListener('change', (e) => {
+      const t = e.target as HTMLInputElement | null;
+      if (t && t.name === 'letter') render(t.value);
+    });
+
+    // estado inicial (si alguno ya viene checked)
+    const checked = fieldset.querySelector('input[name="letter"]:checked') as HTMLInputElement;
+    render(checked ? checked.value : 'A');
+
+</script>
