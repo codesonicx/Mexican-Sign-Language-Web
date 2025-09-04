@@ -1,0 +1,38 @@
+---
+interface pillProps {
+    text: string;
+    fontSize?: string;
+}
+
+const { text, fontSize = "0.75rem"} = Astro.props as pillProps
+---
+
+<div class="pill" style={`--pill-font-size: ${fontSize}`}>
+    <slot/>
+    <span>{text}</span>
+</div>
+
+<style>
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        color: var(--secondary-foreground);
+        background-color: var(--secondary);
+
+        padding: 4px 12px 4px 8px;
+        border-radius: 4px;
+        gap: 4px;
+        
+        font-size: var(--pill-font-size)
+    }
+
+    .pill :global(svg),
+    .pill :global(img) {
+        height: calc(var(--pill-font-size, 1rem) * 1.25);
+        width: auto;
+        flex-shrink: 0;
+    }
+
+</style>
