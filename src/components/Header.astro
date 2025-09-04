@@ -13,7 +13,9 @@ import LinkButton from '../components/LinkButton.astro';
             <a href=#community>Community</a>
             <a href=#about>About</a>
         </nav>
-        <LinkButton text="Log In"></LinkButton>
+        <div class="login-btn-wrapper">
+            <LinkButton text="Log In"></LinkButton>
+        </div>
     </div>
 </header>
 
@@ -69,10 +71,17 @@ import LinkButton from '../components/LinkButton.astro';
     @media (max-width: 850px) {
         .navigation-menu {
             justify-content: center;
+            gap: 0;
         }
 
         a {
             display:none;
+        }
+    }
+
+    @media (max-width: 550px) {
+        .login-btn-wrapper {
+            display: none;
         }
     }
 </style>
