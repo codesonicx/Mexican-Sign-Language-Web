@@ -1,5 +1,6 @@
 ---
 interface ButtonProps {
+    id?: string;
     text?: string;
     type?: 'button' | 'submit' | 'reset';
     variant?: 'primary' | 'secondary' | 'default';
@@ -7,13 +8,15 @@ interface ButtonProps {
 }
 const props = Astro.props as ButtonProps;
 
+const id      = props.id;
 const text    = props.text;
 const type    = props.type || 'button';
 const variant = props.variant || 'default';
 const disabled = !!props.disabled;
 ---
-<button type={type} class={`btn ${variant}`} disabled={disabled}>
-    <slot />{text}
+<button id={id} type={type} class={`btn ${variant}`} disabled={disabled}>
+    <slot />
+    {text}
 </button>
 
 <style>
