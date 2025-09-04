@@ -1,5 +1,92 @@
-<header>
-    <div>
-        <span>Go back</span>
-    </div>
-</header>
+---
+import Layout from '../layouts/Layout.astro'
+import Arrow from '../assets/arrow.svg'
+import CameraIcon from '../assets/camera.svg'
+import Pill from '../components/Pill.astro'
+import LinkButton from '../components/LinkButton.astro'
+import Section from '../layouts/Section.astro'
+import Webcam from '../components/Webcam.astro'
+import Button from '../components/Button.astro'
+import Shooter from '../assets/shooter.svg'
+import EyeOff from '../assets/eye-off.svg'
+import Upload from '../assets/upload.svg'
+import Alphabet from '../components/Alphabet.astro'
+import Results from '../components/Results.astro'
+---
+<Layout>
+    <header>
+        <div class="go-back-container">
+            <LinkButton href="/" variant="navigation" text="Go Back">
+                <Arrow/>
+            </LinkButton>
+            <p>Mexican Sign Language</p>
+            <Pill text="Camera Mode">
+                <CameraIcon/>
+            </Pill>
+        </div>
+    </header>
+    <main>
+        <Section id="Camera-tool">
+            <div class="grid-container">
+                <div class="camera-and-options">
+                    <h1>Real-Time Recognition</h1>
+                    <p>Use your camera or upload an image to recognize Mexican Sign Language gestures</p>
+                    <Webcam />
+                    <div class="options">
+                        <Button id="captureBtn" text="Capture" variant="primary">
+                            <Shooter />
+                        </Button>
+                        <Button text="Hide Landmarks">
+                            <EyeOff />
+                        </Button>
+                        <Button text="Upload Image">
+                            <Upload />
+                        </Button>
+                    </div>
+                </div>
+
+                <div>
+                    <Alphabet />
+                    <Results />
+                </div>
+            </div>
+        </Section>
+    </main>
+</Layout>
+
+<style>
+    header {
+        margin: 0 auto;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .go-back-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px;
+    }
+
+    .grid-container {
+        display: grid;
+        grid-template-columns: 1fr minmax(0, 400px);
+        gap: 30px;
+    }
+    .options {
+		display: flex;
+		flex-direction: row;
+		justify-content:space-between;
+		overflow: hidden;
+
+		width: 100%;
+		gap: 1rem;
+	}
+</style>
+
+<script>
+	import { enableVideoProcessing, captureSnapshot, enablePreviewToggle } from '../scripts/video-processing.js';
+
+	enableVideoProcessing('webcam', 'overlay');
+	enablePreviewToggle('togglePreviewBtn');	
+	captureSnapshot('startCapturing');
+</script>
