@@ -4,7 +4,7 @@ interface SectionContainerProps {
     className?: string;
 }
 
-const { id, className = ""} = Astro.props
+const { id, className = ""} = Astro.props as SectionContainerProps
 ---
 <section id={id} class={className}>
     <div class="container">
@@ -15,7 +15,7 @@ const { id, className = ""} = Astro.props
 
 <style>
     section {
-        padding: 80px 16px;
+        padding: 80px 30px;
     }
 
     .container {

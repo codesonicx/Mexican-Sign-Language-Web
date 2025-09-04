@@ -3,36 +3,35 @@ import LinkButton from '../components/LinkButton.astro';
 ---
 
 <header>
-    <ul>
+    <div class="navigation-menu">
         <div class="logo">
             <span>LSM</span>
             <p>Mexican Sign Language</p>
         </div>
-        <div class="nav-links">
+        <nav class="nav-links">
             <a href=#features>Features</a>
             <a href=#community>Community</a>
             <a href=#about>About</a>
-        </div>
+        </nav>
         <LinkButton text="Log In"></LinkButton>
-    </ul>
+    </div>
 </header>
 
 <style>
     header {
-        height: 68px;
-        padding: 16px 70px;
+        padding: 5px 70px;
         border-bottom: solid 1px var(--border);
-        margin: 0 auto;
-        
     }
-
-    ul {
+    
+    .navigation-menu {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        max-width: 1200px;
-    }
+        max-width: 1000px;
+        margin: 0 auto;
+        gap: 30px
 
+    }
     .logo {
         display: flex;
         align-items: center;
@@ -49,6 +48,7 @@ import LinkButton from '../components/LinkButton.astro';
 
     p {
         font-weight: bold;
+        text-wrap: nowrap;
         color: var(--foreground);
     }
 
@@ -66,13 +66,13 @@ import LinkButton from '../components/LinkButton.astro';
         color: var(--foreground);
     }
 
-    @media (max-width: 640px) {
+    @media (max-width: 850px) {
         header {
-            padding: 13px 25px;
-            font-size: x-small;
+            padding: 5px 30px;
         }
-        .nav-links {
-            flex-wrap: wrap;
+
+        .navigation-menu {
+            justify-content: center;
         }
 
         a {
