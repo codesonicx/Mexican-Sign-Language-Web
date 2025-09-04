@@ -28,7 +28,7 @@ import Results from '../components/Results.astro'
     <main>
         <Section id="Camera-tool">
             <div class="grid-container">
-                <div class="camera-and-options">
+                <div class="first-card">
                     <h1>Real-Time Recognition</h1>
                     <p>Use your camera or upload an image to recognize Mexican Sign Language gestures</p>
                     <Webcam />
@@ -36,7 +36,7 @@ import Results from '../components/Results.astro'
                         <Button id="captureBtn" text="Capture" variant="primary">
                             <Shooter />
                         </Button>
-                        <Button text="Hide Landmarks">
+                        <Button id="togglePreviewBtn" text="Hide Landmarks">
                             <EyeOff />
                         </Button>
                         <Button text="Upload Image">
@@ -45,7 +45,7 @@ import Results from '../components/Results.astro'
                     </div>
                 </div>
 
-                <div>
+                <div class="second-card">
                     <Alphabet />
                     <Results />
                 </div>
@@ -72,15 +72,33 @@ import Results from '../components/Results.astro'
         grid-template-columns: 1fr minmax(0, 400px);
         gap: 30px;
     }
-    .options {
-		display: flex;
-		flex-direction: row;
-		justify-content:space-between;
-		overflow: hidden;
+    .first-card > h1 {
+        font-size: 2.25rem;
+    }
 
-		width: 100%;
-		gap: 1rem;
-	}
+    .first-card > p {
+        font-size: 1.125rem;
+        color: var(--muted-foreground);
+        margin: 16px 0 24px;
+    }
+    .options {
+        display: flex;
+        gap: 1rem;
+        margin-top: 20px;
+    }
+
+    .options :global(.btn) {
+        flex: 1 1 0;
+        min-width: 0;
+        font-size: 0.8rem;
+        gap: 18px;
+    }
+
+    @media (max-width:1000px) {
+        .grid-container {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 
 <script>
@@ -88,5 +106,5 @@ import Results from '../components/Results.astro'
 
 	enableVideoProcessing('webcam', 'overlay');
 	enablePreviewToggle('togglePreviewBtn');	
-	captureSnapshot('startCapturing');
+	captureSnapshot('captureBtn');
 </script>
