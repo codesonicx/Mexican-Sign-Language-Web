@@ -19,7 +19,6 @@ import LinkButton from '../components/LinkButton.astro';
 
 <style>
     header {
-        padding: 5px 70px;
         border-bottom: solid 1px var(--border);
     }
     
@@ -29,7 +28,8 @@ import LinkButton from '../components/LinkButton.astro';
         justify-content: space-between;
         max-width: 1000px;
         margin: 0 auto;
-        gap: 30px
+        gap: 30px;
+        padding: 16px;
 
     }
     .logo {
@@ -67,10 +67,6 @@ import LinkButton from '../components/LinkButton.astro';
     }
 
     @media (max-width: 850px) {
-        header {
-            padding: 5px 30px;
-        }
-
         .navigation-menu {
             justify-content: center;
         }
