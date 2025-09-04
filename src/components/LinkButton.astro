@@ -55,6 +55,19 @@ if (target === '_blank' && !rel) {
         background: var(--secondary);
         color: var(--primary-foreground);
     }
+
+    .navigation {
+        border: none;
+        box-shadow: none;
+        font-size: 1rem;
+        font-weight: 400;
+        color: var(--muted-foreground);
+    }
+
+    .navigation:hover {
+        border: none;
+        color: color-mix(in oklab, var(--foreground) 90%, transparent);
+    }
     .default {
         background: var(--primary-foreground);
         color: var(--foreground);
