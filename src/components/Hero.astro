@@ -1,15 +1,15 @@
 ---
 import Button from "./Button.astro"
 import LinkButton from "./LinkButton.astro"
-import bolt from "../assets/bolt.svg"
+import Bolt from "../assets/bolt.svg"
 import UploadIcon from "../assets/upload.svg"
 import CameraIcon from "../assets/camera.svg"
+import Pill from "./Pill.astro"
 ---
 
-<div class="ai-container">
-    <img src={bolt.src} alt="Bolt logo in SVG format to stand out in AI."/>
-    <span>Powered by AI</span>
-</div>
+<Pill text="Powered by AI">
+    <Bolt />
+</Pill>
 
 <h1>Recognition of Mexican Sign Language with Artificial Intelligence</h1>
 <p>Upload images of hand gestures and let our AI analyze them to recognize letters, words, and expressions in Mexican Sign Language.</p>
@@ -29,6 +29,7 @@ import CameraIcon from "../assets/camera.svg"
         color: var(--foreground);
         font-size: 3.75rem;
         line-height: 4rem;
+        margin-top: 16px;
         margin-bottom: 24px;
 
     }
@@ -42,21 +43,6 @@ import CameraIcon from "../assets/camera.svg"
     h1, p {
         text-align: center;
         text-wrap: balance;
-    }
-    .ai-container {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background-color: var(--secondary);
-        padding: 3px 8px;
-        border-radius: 4px;
-        gap: 4px;
-        margin-bottom: 16px;
-    }
-
-    .ai-container span {
-        color: var(--secondary-foreground);
-        font-size: 0.75rem;
     }
 
     .button-group {
