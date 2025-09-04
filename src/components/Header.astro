@@ -71,7 +71,6 @@ import LinkButton from '../components/LinkButton.astro';
     @media (max-width: 850px) {
         .navigation-menu {
             justify-content: center;
-            gap: 0;
         }
 
         a {
@@ -80,6 +79,10 @@ import LinkButton from '../components/LinkButton.astro';
     }
 
     @media (max-width: 550px) {
+
+        .navigation-menu {
+            gap: 0;
+        }
         .login-btn-wrapper {
             display: none;
         }
