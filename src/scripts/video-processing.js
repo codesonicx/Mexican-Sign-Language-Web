@@ -192,6 +192,37 @@ const captureSnapshot = (buttonId = 'captureBtn') => {
 
                 const record = await resp.json();
                 console.log('✅ Detected hands—metadata:', record);
+
+                // ---- extraer campos principales ----
+                const detectedLetter = record.detected_as ?? record.predicted_as ?? '-';
+                const confidenceNum = Number(record.confidence ?? 0);              // 0..1
+                const handRaw =
+                    record?.metadata?.handedness?.[0] ??
+                    (record?.metadata?.landmarks?.right?.length ? 'right' :
+                        record?.metadata?.landmarks?.left?.length ? 'left' : null);
+
+                const handDetected = handRaw
+                    ? handRaw.charAt(0).toUpperCase() + handRaw.slice(1)   // Left/Right
+                    : '—';
+
+                const confidencePct = `${Math.round(confidenceNum * 100)}%`;
+
+                // ---- guarda en un “estado” global simple (por si lo necesitas en otros módulos) ----
+                window.MSL_STATE = {
+                    lastDetectedLetter: detectedLetter,
+                    lastConfidenceNum: confidenceNum,
+                    lastConfidencePct: confidencePct,
+                    lastHand: handDetected,
+                };
+
+                // ---- actualiza la UI de Results (si existe) ----
+                const $letter = document.getElementById('resultLetter');
+                const $conf = document.getElementById('resultConfidence');
+                const $hand = document.getElementById('resultHand');
+
+                if ($letter) $letter.textContent = "Letter detected: " + detectedLetter;
+                if ($conf) $conf.textContent = "Confidence: " + confidencePct;
+                if ($hand) $hand.textContent = "Hand detected: " + handDetected;
             }
             catch (err) {
                 console.error('Error sending:', err.message);
