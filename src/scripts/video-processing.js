@@ -1,7 +1,6 @@
-// public/scripts/video-processor.js
 import { FilesetResolver, HandLandmarker } from '@mediapipe/tasks-vision';
 
-// Finger connection indices and colors, matching MediaPipe's Python defaults
+// ===== CONFIGURATION =====
 const FINGER_CONNECTIONS = {
     thumb: [[0, 1], [1, 2], [2, 3], [3, 4]],
     index: [[5, 6], [6, 7], [7, 8]],
@@ -20,217 +19,299 @@ const FINGER_COLORS = {
     palm: [200, 200, 200]  // light gray
 };
 
+const CONFIG = {
+    API_URL: (import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8000').replace(/\/$/, ''),
+    VIDEO_CONSTRAINTS: {
+        high: { width: { ideal: 1920 }, height: { ideal: 1080 } },
+        fallback: { video: true }
+    },
+    MEDIAPIPE: {
+        WASM_URL: "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm",
+        MODEL_URL: "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task"
+    },
+    DETECTION: {
+        numHands: 2,
+        minHandDetectionConfidence: 0.5,
+        minHandPresenceConfidence: 0.5,
+        minTrackingConfidence: 0.5
+    },
+    DRAWING: {
+        lineWidth: 8,
+        landmarkRadius: 8,
+        landmarkColor: 'white'
+    }
+};
+
+// ===== STATE =====
 let video, overlay, ctx, offscreen, landmarker, latestLandmarks;
 let showLandmarks = true;
 
+// ===== CORE PROCESSING =====
 /**
  * Initialize webcam, model, and canvases
  */
-const enableVideoProcessing = async (
-    videoId = 'webcam',
-    overlayId = 'overlay'
-) => {
+const enableVideoProcessing = async (videoId = 'webcam', overlayId = 'overlay') => {
+    // Initialize DOM elements
     video = document.getElementById(videoId);
     overlay = document.getElementById(overlayId);
     ctx = overlay.getContext('2d');
     offscreen = document.createElement('canvas');
 
-    // Setup webcam at highest available resolution
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-            video: { width: { ideal: 1920 }, height: { ideal: 1080 } }
-        });
-        video.srcObject = stream;
-        await new Promise((r) => (video.onloadedmetadata = r));
-    } catch {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        video.srcObject = stream;
-        await new Promise((r) => (video.onloadedmetadata = r));
-    }
+    // Setup webcam with fallback
+    await setupWebcam();
 
-    // Match overlay and offscreen canvas size to video
-    overlay.width = offscreen.width = video.videoWidth;
-    overlay.height = offscreen.height = video.videoHeight;
+    // Match canvas sizes to video
+    setupCanvases();
 
+    // Initialize MediaPipe model
+    await initializeHandLandmarker();
 
-
-    // Initialize MediaPipe HandLandmarker in VIDEO mode
-    const vision = await FilesetResolver.forVisionTasks(
-        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"
-    );
-    landmarker = await HandLandmarker.createFromOptions(vision, {
-        baseOptions: {
-            modelAssetPath: "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
-            delegate: 'GPU'
-        },
-        runningMode: 'VIDEO',
-        numHands: 2,
-        minHandDetectionConfidence: 0.5,
-        minHandPresenceConfidence: 0.5,
-        minTrackingConfidence: 0.5
-    });
-
+    // Start processing loop
     requestAnimationFrame(processFrame);
 };
 
-/**
- * Toggle landmark preview on/off
- */
-const enablePreviewToggle = (
-    buttonId = 'togglePreviewBtn'
-) => {
-    const btn = document.getElementById(buttonId);
-    if (!btn) return;
-    // Find the label span inside the button
-    const labelSpan = btn.querySelector('.label');
-    if (!labelSpan) return;
-    // Initialize label based on current state
-    labelSpan.textContent = showLandmarks ? 'Hide Landmarks' : 'Show Landmarks';
-    btn.addEventListener('click', () => {
-        showLandmarks = !showLandmarks;
-        // Update only the label text, keep the icon slot intact
-        labelSpan.textContent = showLandmarks ? 'Hide Landmarks' : 'Show Landmarks';
-        if (!showLandmarks) {
-            ctx.clearRect(0, 0, overlay.width, overlay.height);
-        }
+const setupWebcam = async () => {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: CONFIG.VIDEO_CONSTRAINTS.high
+        });
+        video.srcObject = stream;
+        await new Promise((resolve) => (video.onloadedmetadata = resolve));
+    } catch {
+        const stream = await navigator.mediaDevices.getUserMedia(CONFIG.VIDEO_CONSTRAINTS.fallback);
+        video.srcObject = stream;
+        await new Promise((resolve) => (video.onloadedmetadata = resolve));
+    }
+};
+
+const setupCanvases = () => {
+    overlay.width = offscreen.width = video.videoWidth;
+    overlay.height = offscreen.height = video.videoHeight;
+};
+
+const initializeHandLandmarker = async () => {
+    const vision = await FilesetResolver.forVisionTasks(CONFIG.MEDIAPIPE.WASM_URL);
+    landmarker = await HandLandmarker.createFromOptions(vision, {
+        baseOptions: {
+            modelAssetPath: CONFIG.MEDIAPIPE.MODEL_URL,
+            delegate: 'GPU'
+        },
+        runningMode: 'VIDEO',
+        ...CONFIG.DETECTION
     });
 };
 
 /**
- * Main loop: detect landmarks and draw color-coded skeleton if enabled
+ * Main processing loop: detect landmarks and draw color-coded skeleton if enabled
  */
 const processFrame = (timestamp) => {
     const result = landmarker.detectForVideo(video, timestamp);
     latestLandmarks = result.landmarks || [];
 
     ctx.clearRect(0, 0, overlay.width, overlay.height);
+
     if (showLandmarks) {
-        latestLandmarks.forEach((hand) => {
-            // Draw each finger with its color
-            for (const finger in FINGER_CONNECTIONS) {
-                const connections = FINGER_CONNECTIONS[finger];
-                const [r, g, b] = FINGER_COLORS[finger];
-                ctx.strokeStyle = `rgb(${r},${g},${b})`;
-                ctx.lineWidth = 8;
-                connections.forEach(([start, end]) => {
-                    const p1 = hand[start];
-                    const p2 = hand[end];
-                    ctx.beginPath();
-                    ctx.moveTo(
-                        p1.x * overlay.width,
-                        p1.y * overlay.height
-                    );
-                    ctx.lineTo(
-                        p2.x * overlay.width,
-                        p2.y * overlay.height
-                    );
-                    ctx.stroke();
-                });
-            }
-            // Draw the landmark circles in white
-            ctx.fillStyle = 'white';
-            hand.forEach(({ x, y }) => {
-                ctx.beginPath();
-                ctx.arc(
-                    x * overlay.width,
-                    y * overlay.height,
-                    8,
-                    0,
-                    2 * Math.PI
-                );
-                ctx.fill();
-            });
-        });
+        drawHandLandmarks();
     }
+
     requestAnimationFrame(processFrame);
 };
 
-/**
- * Capture a snapshot of the current video frame and send it to the server
- */
+const drawHandLandmarks = () => {
+    latestLandmarks.forEach((hand) => {
+        // Draw finger connections with color coding
+        drawFingerConnections(hand);
 
-const RAW_API = import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8000'
-const API_URL = RAW_API.replace(/\/$/, '')
-
-const captureSnapshot = (buttonId = 'captureBtn') => {
-    document.getElementById(buttonId).addEventListener('click', async () => {
-        // Get the selected letter from radio buttons
-        const selected = document.querySelector('input[name="letter"]:checked');
-        if (!selected) {
-            return alert('Please select a letter before capturing.');
-        }
-        const letter = selected.value;
-
-        // Capture the frame in the hidden canvas
-        const offCtx = offscreen.getContext('2d');
-        offCtx.drawImage(video, 0, 0);
-
-        // Convert the canvas to a blob and send it
-        offscreen.toBlob(async (blob) => {
-            try {
-                const endpoint = `${API_URL}/process/`
-                const form = new FormData();
-                form.append('image', blob, `${letter}_${crypto.randomUUID().split('-')[0]}.png`);
-                form.append('label', letter);
-                const resp = await fetch(endpoint, {
-                    method: 'POST',
-                    body: form
-                });
-
-                // If the status is NOT 2xx, grab the JSON error payload
-                if (!resp.ok) {
-                    let errDetail = `HTTP ${resp.status}`;
-                    try {
-                        const payload = await resp.json();
-                        errDetail += `: ${payload.detail ?? JSON.stringify(payload)}`;
-                    } catch {
-                        const text = await resp.text();
-                        errDetail += `: ${text}`;
-                    }
-                    throw new Error(errDetail);
-                }
-
-                const record = await resp.json();
-                console.log('✅ Detected hands—metadata:', record);
-
-                // ---- extraer campos principales ----
-                const detectedLetter = record.detected_as ?? record.predicted_as ?? '-';
-                const confidenceNum = Number(record.confidence ?? 0);              // 0..1
-                const handRaw =
-                    record?.metadata?.handedness?.[0] ??
-                    (record?.metadata?.landmarks?.right?.length ? 'right' :
-                        record?.metadata?.landmarks?.left?.length ? 'left' : null);
-
-                const handDetected = handRaw
-                    ? handRaw.charAt(0).toUpperCase() + handRaw.slice(1)   // Left/Right
-                    : '—';
-
-                const confidencePct = `${Math.round(confidenceNum * 100)}%`;
-
-                // ---- guarda en un “estado” global simple (por si lo necesitas en otros módulos) ----
-                window.MSL_STATE = {
-                    lastDetectedLetter: detectedLetter,
-                    lastConfidenceNum: confidenceNum,
-                    lastConfidencePct: confidencePct,
-                    lastHand: handDetected,
-                };
-
-                // ---- actualiza la UI de Results (si existe) ----
-                const $letter = document.getElementById('resultLetter');
-                const $conf = document.getElementById('resultConfidence');
-                const $hand = document.getElementById('resultHand');
-
-                if ($letter) $letter.textContent = "Letter detected: " + detectedLetter;
-                if ($conf) $conf.textContent = "Confidence: " + confidencePct;
-                if ($hand) $hand.textContent = "Hand detected: " + handDetected;
-            }
-            catch (err) {
-                console.error('Error sending:', err.message);
-            }
-        }, 'image/png');
+        // Draw landmark points
+        drawLandmarkPoints(hand);
     });
 };
 
+const drawFingerConnections = (hand) => {
+    ctx.lineWidth = CONFIG.DRAWING.lineWidth;
+
+    for (const finger in FINGER_CONNECTIONS) {
+        const connections = FINGER_CONNECTIONS[finger];
+        const [r, g, b] = FINGER_COLORS[finger];
+        ctx.strokeStyle = `rgb(${r},${g},${b})`;
+
+        connections.forEach(([start, end]) => {
+            const p1 = hand[start];
+            const p2 = hand[end];
+            ctx.beginPath();
+            ctx.moveTo(p1.x * overlay.width, p1.y * overlay.height);
+            ctx.lineTo(p2.x * overlay.width, p2.y * overlay.height);
+            ctx.stroke();
+        });
+    }
+};
+
+const drawLandmarkPoints = (hand) => {
+    ctx.fillStyle = CONFIG.DRAWING.landmarkColor;
+
+    hand.forEach(({ x, y }) => {
+        ctx.beginPath();
+        ctx.arc(
+            x * overlay.width,
+            y * overlay.height,
+            CONFIG.DRAWING.landmarkRadius,
+            0,
+            2 * Math.PI
+        );
+        ctx.fill();
+    });
+};
+
+// ===== UI INTERACTIONS =====
+/**
+ * Enable landmark preview toggle functionality
+ */
+const enablePreviewToggle = (buttonId = 'togglePreviewBtn') => {
+    const btn = document.getElementById(buttonId);
+    if (!btn) return;
+
+    const labelSpan = btn.querySelector('.label');
+    if (!labelSpan) return;
+
+    // Initialize button label
+    updateToggleButtonLabel(labelSpan);
+
+    // Add click handler
+    btn.addEventListener('click', () => {
+        showLandmarks = !showLandmarks;
+        updateToggleButtonLabel(labelSpan);
+
+        if (!showLandmarks) {
+            ctx.clearRect(0, 0, overlay.width, overlay.height);
+        }
+    });
+};
+
+const updateToggleButtonLabel = (labelSpan) => {
+    labelSpan.textContent = showLandmarks ? 'Hide Landmarks' : 'Show Landmarks';
+};
+
+/**
+ * Enable snapshot capture functionality
+ */
+const captureSnapshot = (buttonId = 'captureBtn') => {
+    document.getElementById(buttonId).addEventListener('click', async () => {
+        const letter = getSelectedLetter();
+        if (!letter) {
+            alert('Please select a letter before capturing.');
+            return;
+        }
+
+        try {
+            const blob = await captureVideoFrame();
+            const response = await sendImageToServer(blob, letter);
+            const detectionResult = await processServerResponse(response);
+            updateResultsUI(detectionResult);
+        } catch (err) {
+            console.error('Error during capture:', err.message);
+        }
+    });
+};
+
+// ===== UTILITIES =====
+const getSelectedLetter = () => {
+    const selected = document.querySelector('input[name="letter"]:checked');
+    return selected?.value || null;
+};
+
+const captureVideoFrame = () => {
+    return new Promise((resolve) => {
+        const offCtx = offscreen.getContext('2d');
+        offCtx.drawImage(video, 0, 0);
+        offscreen.toBlob(resolve, 'image/png');
+    });
+};
+
+const sendImageToServer = async (blob, letter) => {
+    const endpoint = `${CONFIG.API_URL}/process/`;
+    const formData = new FormData();
+    formData.append('image', blob, `${letter}_${crypto.randomUUID().split('-')[0]}.png`);
+    formData.append('label', letter);
+
+    const response = await fetch(endpoint, {
+        method: 'POST',
+        body: formData
+    });
+
+    if (!response.ok) {
+        await handleServerError(response);
+    }
+
+    return response;
+};
+
+const handleServerError = async (response) => {
+    let errorDetail = `HTTP ${response.status}`;
+
+    try {
+        const payload = await response.json();
+        errorDetail += `: ${payload.detail ?? JSON.stringify(payload)}`;
+    } catch {
+        const text = await response.text();
+        errorDetail += `: ${text}`;
+    }
+
+    throw new Error(errorDetail);
+};
+
+const processServerResponse = async (response) => {
+    const record = await response.json();
+    console.log('✅ Detected hands—metadata:', record);
+
+    return extractDetectionData(record);
+};
+
+const extractDetectionData = (record) => {
+    const detectedLetter = record.detected_as ?? record.predicted_as ?? '-';
+    const confidenceNum = Number(record.confidence ?? 0);
+
+    const handRaw = record?.metadata?.handedness?.[0] ??
+        (record?.metadata?.landmarks?.right?.length ? 'right' :
+            record?.metadata?.landmarks?.left?.length ? 'left' : null);
+
+    const handDetected = handRaw
+        ? handRaw.charAt(0).toUpperCase() + handRaw.slice(1)
+        : '—';
+
+    const confidencePct = `${Math.round(confidenceNum * 100)}%`;
+
+    return {
+        detectedLetter,
+        confidenceNum,
+        confidencePct,
+        handDetected
+    };
+};
+
+const updateResultsUI = (result) => {
+    const { detectedLetter, confidenceNum, confidencePct, handDetected } = result;
+
+    // Store in global state for other modules
+    window.MSL_STATE = {
+        lastDetectedLetter: detectedLetter,
+        lastConfidenceNum: confidenceNum,
+        lastConfidencePct: confidencePct,
+        lastHand: handDetected,
+    };
+
+    // Update UI elements if they exist
+    const elements = {
+        letter: document.getElementById('resultLetter'),
+        confidence: document.getElementById('resultConfidence'),
+        hand: document.getElementById('resultHand')
+    };
+
+    if (elements.letter) elements.letter.textContent = `Letter detected: ${detectedLetter}`;
+    if (elements.confidence) elements.confidence.textContent = `Confidence: ${confidencePct}`;
+    if (elements.hand) elements.hand.textContent = `Hand detected: ${handDetected}`;
+};
+
+// ===== EXPORTS =====
 export {
     enableVideoProcessing,
     enablePreviewToggle,
