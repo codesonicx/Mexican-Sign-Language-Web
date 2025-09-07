@@ -1,9 +1,23 @@
 ---
-
+import CameraIcon from '@/assets/camera.svg'
+import Button from '@/components/Button.astro'
 ---
 <div class="video-container">
-    <video id="webcam" class="camera" autoplay></video>
-    <canvas id="overlay"></canvas>
+    <div id="video-player">
+        <video id="webcam" class="camera" autoplay></video>
+        <canvas id="overlay"></canvas>
+    </div>
+
+    <div id="setup-container" class="setup-container">
+        <div id="setup" class="setup-overlay">
+                <CameraIcon class="camera-icon"/>
+            <p>Camera not started</p>
+            <Button id="startCameraBtn" text="Start Camera" variant="primary" >
+                <CameraIcon/>
+            </Button>
+        </div>
+    </div>
+
 </div>
 
 <style>
@@ -11,10 +25,11 @@
         position: relative;
         width: 100%;
         aspect-ratio: 16/9;
-        background: black;
+        background: var(--card);
         overflow: hidden;
         border-radius: 8px;
-        border: 4px var(--color-bg-lighter) solid;
+        border: 1px solid var(--border);
+        box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     }
     .camera {
         width: 100%;
@@ -36,7 +51,76 @@
 
     @media (max-width: 960px) {
         .video-container {
-            aspect-ratio: 9/16;
+            aspect-ratio: 3/2;
         }
     }
+
+    .setup-container {
+        position: absolute;
+        top: 0; 
+        left: 0;
+        width: 100%;
+        height: 100%;
+        padding: 20px 0;
+    }
+    .setup-overlay {
+        display: flex;
+        flex-direction: column;
+
+        height: 100%;
+        background-color: var(--muted);
+        align-items: center;
+        justify-content: center;
+    }
+
+    .camera-icon {
+        width: 80px;
+        height: 80px;
+        color: var(--muted-foreground)
+    }
+
+    .setup-overlay > p {
+        margin: 20px 0;
+    }
+
+    .setup-overlay :global(.btn) {
+        font-size: 0.8rem;
+        gap: 12px;
+        padding: 8px 16px;
+    }
 </style>
+
+<script>
+    import { enableVideoProcessing } from "@/scripts/video-processing";
+
+    const startBtn = document.getElementById('startCameraBtn') as HTMLButtonElement;
+    const setup = document.getElementById('setup-container');            // overlay contenedor
+    const videoEl = document.getElementById('webcam');
+
+
+    if (startBtn && setup && videoEl) {
+        
+        videoEl.addEventListener('playing', () => {
+            setup.hidden = true;
+        }, { once: true });
+
+        startBtn.addEventListener('click', async () => {
+            try {
+                startBtn.disabled = true;
+                await Promise.resolve(enableVideoProcessing('webcam', 'overlay'));
+
+                videoEl.addEventListener('loadeddata', () => {
+                    setup.classList.add('hidden');
+                }, { once: true });
+
+                } catch (err) {
+                console.error(err);
+
+                } finally {
+                startBtn.disabled = false;
+            }
+        });
+        } else {
+        console.warn('Missing Nodes (startCameraBtn / setup-container / webcam) in the DOM');
+    } 
+</script>
