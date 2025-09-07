@@ -1,17 +1,17 @@
 ---
-import Layout from '../layouts/Layout.astro'
-import Arrow from '../assets/arrow.svg'
-import CameraIcon from '../assets/camera.svg'
-import Pill from '../components/Pill.astro'
-import LinkButton from '../components/LinkButton.astro'
-import Section from '../layouts/Section.astro'
-import Webcam from '../components/Webcam.astro'
-import Button from '../components/Button.astro'
-import Shooter from '../assets/shooter.svg'
-import EyeOff from '../assets/eye-off.svg'
-import Upload from '../assets/upload.svg'
-import Alphabet from '../components/Alphabet.astro'
-import Results from '../components/Results.astro'
+import Layout from '@/layouts/Layout.astro'
+import Arrow from '@/assets/arrow.svg'
+import CameraIcon from '@/assets/camera.svg'
+import Pill from '@/components/Pill.astro'
+import LinkButton from '@/components/LinkButton.astro'
+import Section from '@/layouts/Section.astro'
+import Webcam from '@/components/Webcam.astro'
+import Button from '@/components/Button.astro'
+import Shooter from '@/assets/shooter.svg'
+import EyeOff from '@/assets/eye-off.svg'
+import Upload from '@/assets/upload.svg'
+import Alphabet from '@/components/Alphabet.astro'
+import Results from '@/components/Results.astro'
 ---
 <Layout>
     <header>
@@ -102,9 +102,12 @@ import Results from '../components/Results.astro'
 </style>
 
 <script>
-	import { enableVideoProcessing, captureSnapshot, enablePreviewToggle } from '../scripts/video-processing.js';
+	import { enableVideoProcessing, captureSnapshot, enablePreviewToggle } from '@/scripts/video-processing.js';
 
-	enableVideoProcessing('webcam', 'overlay');
+    document.getElementById('startCameraBtn')?.addEventListener('click', () => {
+        enableVideoProcessing('webcam', 'overlay');
+    });
+
 	enablePreviewToggle('togglePreviewBtn');	
 	captureSnapshot('captureBtn');
 </script>
