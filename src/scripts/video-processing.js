@@ -1,4 +1,5 @@
 import { FilesetResolver, HandLandmarker } from '@mediapipe/tasks-vision';
+import { AppState } from '@/scripts/state';
 
 // ===== CONFIGURATION =====
 const FINGER_CONNECTIONS = {
@@ -203,12 +204,15 @@ const captureSnapshot = (buttonId = 'captureBtn') => {
         }
 
         try {
+            AppState.setStatus("loading");
             const blob = await captureVideoFrame();
             const response = await sendImageToServer(blob, letter);
-            const detectionResult = await processServerResponse(response);
-            updateResultsUI(detectionResult);
+            const detectionRecord = await processServerResponse(response);
+            pushResultsToState(detectionRecord);
+            AppState.setStatus("requestDone")
         } catch (err) {
             console.error('Error during capture:', err.message);
+            AppState.setStatus("error");
         }
     });
 };
@@ -280,35 +284,13 @@ const extractDetectionData = (record) => {
 
     const confidencePct = `${Math.round(confidenceNum * 100)}%`;
 
-    return {
-        detectedLetter,
-        confidenceNum,
-        confidencePct,
-        handDetected
-    };
+    return { detectedLetter, confidenceNum, handDetected };
 };
 
-const updateResultsUI = (result) => {
-    const { detectedLetter, confidenceNum, confidencePct, handDetected } = result;
-
-    // Store in global state for other modules
-    window.MSL_STATE = {
-        lastDetectedLetter: detectedLetter,
-        lastConfidenceNum: confidenceNum,
-        lastConfidencePct: confidencePct,
-        lastHand: handDetected,
-    };
-
-    // Update UI elements if they exist
-    const elements = {
-        letter: document.getElementById('resultLetter'),
-        confidence: document.getElementById('resultConfidence'),
-        hand: document.getElementById('resultHand')
-    };
-
-    if (elements.letter) elements.letter.textContent = `Letter detected: ${detectedLetter}`;
-    if (elements.confidence) elements.confidence.textContent = `Confidence: ${confidencePct}`;
-    if (elements.hand) elements.hand.textContent = `Hand detected: ${handDetected}`;
+export const pushResultsToState = (record) => {
+    const data = extractDetectionData(record);
+    AppState.setResult(data);           // ← guarda resultados en el store
+    AppState.setStatus("requestDone");  // ← cambia el estado (la card reacciona sola)
 };
 
 // ===== EXPORTS =====
