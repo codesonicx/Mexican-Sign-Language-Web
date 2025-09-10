@@ -31,7 +31,13 @@ import Results from '@/components/Results.astro'
                 <div class="first-card">
                     <h1>Real-Time Recognition</h1>
                     <p>Use your camera or upload an image to recognize Mexican Sign Language gestures</p>
-                    <Webcam />
+                    
+                    <!-- Webcam container with uploaded image overlay -->
+                    <div class="webcam-container">
+                        <Webcam />
+                        <img id="uploadPreview" alt="preview upload" class="upload-overlay hidden" />
+                    </div>
+
                     <div class="options">
                         <Button id="captureBtn" text="Capture" variant="primary">
                             <Shooter />
@@ -39,10 +45,12 @@ import Results from '@/components/Results.astro'
                         <Button id="togglePreviewBtn" text="Hide Landmarks">
                             <EyeOff />
                         </Button>
-                        <Button text="Upload Image">
+                        <Button id="uploadBtn" text="Upload Image">
                             <Upload />
                         </Button>
                     </div>
+
+                    <input id="fileInput" type="file" accept="image/png,image/jpeg" hidden />
                 </div>
 
                 <div class="second-card">
@@ -72,6 +80,7 @@ import Results from '@/components/Results.astro'
         grid-template-columns: 1fr minmax(0, 400px);
         gap: 30px;
     }
+    
     .first-card > h1 {
         font-size: 2.25rem;
     }
@@ -81,6 +90,30 @@ import Results from '@/components/Results.astro'
         color: var(--muted-foreground);
         margin: 16px 0 24px;
     }
+
+    /* Webcam container styles */
+    .webcam-container {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .upload-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: inherit;
+        z-index: 2;
+    }
+
+    .upload-overlay.hidden {
+        display: none;
+    }
+    
     .options {
         display: flex;
         gap: 1rem;
@@ -110,4 +143,65 @@ import Results from '@/components/Results.astro'
 
 	enablePreviewToggle('togglePreviewBtn');	
 	captureSnapshot('captureBtn');
+
+    // Upload functionality
+    const $uploadBtn   = document.getElementById('uploadBtn');
+    const $fileInput   = document.getElementById('fileInput');
+    const $previewImg  = document.getElementById('uploadPreview');
+
+    // Get webcam and overlay elements
+    const $webcam  = document.getElementById('webcam');   
+    const $overlay = document.getElementById('overlay') as HTMLCanvasElement;  
+    const ctx = $overlay ? $overlay.getContext('2d') : null;
+
+    // Open file selector
+    $uploadBtn?.addEventListener('click', () => $fileInput?.click());
+
+    // Handle file upload and preview
+    $fileInput?.addEventListener('change', async (e) => {
+        const file = (e.target as HTMLInputElement).files?.[0];
+        if (!file) return;
+
+        const url = URL.createObjectURL(file);
+
+        if ($previewImg) {
+            $previewImg.onload = () => {
+                // Show uploaded image overlay
+                $previewImg.classList.remove('hidden');
+                
+                // Get the webcam container dimensions to match overlay size
+                const $webcamContainer = $webcam?.parentElement;
+                if ($webcamContainer && $overlay) {
+                    const containerRect = $webcamContainer.getBoundingClientRect();
+                    
+                    // Adjust overlay canvas to match container size
+                    $overlay.width  = Math.round(containerRect.width);
+                    $overlay.height = Math.round(containerRect.height);
+                    
+                    // Clear any previous drawings
+                    if (ctx) {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    }
+                }
+
+                // Clean up blob URL
+                URL.revokeObjectURL(url);
+            };
+
+            $previewImg.onerror = () => {
+                URL.revokeObjectURL(url);
+                alert('No se pudo cargar la imagen seleccionada.');
+            };
+
+            $previewImg.src = url;
+        }
+    });
+
+    // Optional: Add function to switch back to webcam view
+    function switchToWebcam() {
+        $previewImg?.classList.add('hidden');
+        // You might want to restart the webcam here if needed
+    }
+
+    // You can add a button or event to call switchToWebcam() if needed
 </script>
