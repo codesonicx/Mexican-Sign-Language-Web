@@ -9,11 +9,10 @@ export interface DetectionResult {
 
 export interface AppStateShape {
     status: Status;
-    result?: DetectionResult;     // undefined cuando no hay resultados
-    errorMessage?: string | null; // para mostrar error si aplica
+    result?: DetectionResult;
+    errorMessage?: string | null;
 }
 
-// Estado inicial
 const state: AppStateShape = {
     status: "idle",
     result: undefined,
