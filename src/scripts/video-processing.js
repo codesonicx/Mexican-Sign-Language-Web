@@ -212,7 +212,7 @@ const captureSnapshot = (buttonId = 'captureBtn') => {
             AppState.setStatus("requestDone")
         } catch (err) {
             console.error('Error during capture:', err.message);
-            AppState.setStatus("error");
+            AppState.setError(err.message);
         }
     });
 };
@@ -284,13 +284,11 @@ const extractDetectionData = (record) => {
 
     const confidencePct = `${Math.round(confidenceNum * 100)}%`;
 
-    return { detectedLetter, confidenceNum, handDetected };
+    return { detectedLetter, confidenceNum, handDetected, confidencePct };
 };
 
-export const pushResultsToState = (record) => {
-    const data = extractDetectionData(record);
-    AppState.setResult(data);           // ← guarda resultados en el store
-    AppState.setStatus("requestDone");  // ← cambia el estado (la card reacciona sola)
+export const pushResultsToState = (detectionData) => {
+    AppState.setResult(detectionData);
 };
 
 // ===== EXPORTS =====
