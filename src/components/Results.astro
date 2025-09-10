@@ -1,104 +1,139 @@
 ---
 import { AppState, type AppStateShape } from "@/scripts/state"
 export interface Props {
-  title?: string;
-  idleMessage?: string;
+    title?: string;
+    idleMessage?: string;
 }
 const {
-  title = "Analysis Results",
-  idleMessage = "Take a picture or launch the camera to start the analysis."
+    title = "Analysis Results",
+    idleMessage = "Take a picture or launch the camera to start the analysis."
 } = Astro.props;
 ---
 
 <div class="results-container">
-  <h2>{title}</h2>
+    <h2>{title}</h2>
 
-  <!-- Idle -->
-  <div class="idle-state" id="idleState">
-    <p>{idleMessage}</p>
-  </div>
+    <!-- Idle -->
+    <div class="idle-state" id="idleState">
+        <p>{idleMessage}</p>
+    </div>
 
-  <!-- Loading -->
-  <div class="loading-state hidden" id="loadingState">
-    <div class="loader"></div>
-  </div>
+    <!-- Loading -->
+    <div class="loading-state hidden" id="loadingState">
+        <div class="loader"></div>
+    </div>
 
-  <!-- Results -->
-  <div class="results-state hidden" id="resultsState">
-    <p id="resultLetter">Letter detected: -</p>
-    <p id="resultConfidence">Confidence: -</p>
-    <p id="resultHand">Hand detected: -</p>
-  </div>
+    <!-- Results -->
+    <div class="results-state hidden" id="resultsState">
+        <p id="resultLetter">Letter detected: -</p>
+        <p id="resultConfidence">Confidence: -</p>
+        <p id="resultHand">Hand detected: -</p>
+    </div>
 
-  <!-- Error -->
-  <div class="error-state hidden" id="errorState">
-    <p id="errorMessage">Something went wrong.</p>
-  </div>
+    <!-- Error -->
+    <div class="error-state hidden" id="errorState">
+        <p id="errorMessage">Something went wrong.</p>
+    </div>
 </div>
 
 <style>
-  .results-container {
-    display: flex; flex-direction: column; gap: 4px; padding: 16px;
-    border: 1px solid var(--border, #e2e8f0); border-radius: 8px;
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); background-color: var(--card, #fff);
-    margin-top: 30px; min-height: 100px;
-  }
-  .results-container h2 { text-align: center; margin: 0 0 8px; }
-  .hidden { display: none !important; }
-  .idle-state, .loading-state, .results-state, .error-state {
-    display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60px;
-  }
-  .idle-state p { text-align: center; color: var(--text-muted, #6b7280); margin: 0; }
-  .loading-state { padding: 20px 0; }
-  .loader { width: 50px; aspect-ratio: 1; border-radius: 50%; border: 8px solid; border-color: var(--foreground) transparent; animation: spin 1.25s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .results-state { align-items: stretch; gap: 8px; }
-  .results-state p { margin: 0; padding: 8px 12px; background-color: var(--background-secondary, #f8fafc); border-radius: 6px; font-family: monospace; }
-  .error-state #errorMessage { color: #b91c1c; background: #fee2e2; border: 1px solid #fecaca; padding: 8px 12px; border-radius: 6px; }
+    .results-container {
+        display: flex;
+        flex-direction: column;
+        gap: 4px; padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        background-color: var(--card);
+        margin-top: 30px;
+        min-height: 100px;
+    }
+    .results-container h2 {
+        text-align: center;
+        margin: 0 0 8px;
+    }
+    .hidden {
+        display: none !important;
+    }
+    .idle-state, .loading-state, .results-state, .error-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 60px;
+    }
+    .idle-state p {
+        text-align: center;
+        color: var(--text-muted);
+        margin: 0;
+    }
+    .loading-state {
+        padding: 20px 0;
+    }
+    .loader {
+        width: 50px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        border: 8px solid;
+        border-color: var(--foreground) transparent;
+        animation: spin 1.25s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .results-state {
+        align-items: stretch;
+        gap: 8px;
+    }
+    .results-state p {
+        margin: 0;
+        padding: 8px 12px;
+
+    }
+    .error-state #errorMessage {
+        color: #b91c1c; background: #fee2e2;
+        border: 1px solid #fecaca;
+        padding: 8px 12px;
+        border-radius: 6px;
+    }
 </style>
 
 <script>
-  import { AppState } from "@/scripts/state"; // o "@/scripts/state"
-  import type { AppStateShape } from "@/scripts/state";
+    import { AppState } from "@/scripts/state";
+    import type { AppStateShape } from "@/scripts/state";
 
-  const idleEl = document.getElementById("idleState")!;
-  const loadingEl = document.getElementById("loadingState")!;
-  const resultsEl = document.getElementById("resultsState")!;
-  const errorEl = document.getElementById("errorState")!;
+    const $idle = document.getElementById("idleState")!;
+    const $loading = document.getElementById("loadingState")!;
+    const $results = document.getElementById("resultsState")!;
+    const $error = document.getElementById("errorState")!;
 
-  const letterEl = document.getElementById("resultLetter")!;
-  const confEl = document.getElementById("resultConfidence")!;
-  const handEl = document.getElementById("resultHand")!;
-  const errorMsgEl = document.getElementById("errorMessage")!;
+    const $letter = document.getElementById("resultLetter")!;
+    const $conf = document.getElementById("resultConfidence")!;
+    const $hand = document.getElementById("resultHand")!;
+    const $errorMsg = document.getElementById("errorMessage")!;
 
-  function render(s: AppStateShape) {
-    // visibilidad por estado
-    idleEl.classList.toggle("hidden", s.status !== "idle");
-    loadingEl.classList.toggle("hidden", s.status !== "loading");
-    resultsEl.classList.toggle("hidden", s.status !== "requestDone");
-    errorEl.classList.toggle("hidden", s.status !== "error");
+    function render(s: AppStateShape) {
+        $idle.classList.toggle("hidden", s.status !== "idle");
+        $loading.classList.toggle("hidden", s.status !== "loading");
+        $results.classList.toggle("hidden", s.status !== "requestDone");
+        $error.classList.toggle("hidden", s.status !== "error");
 
-    // contenido de resultados
-    if (s.result && s.status === "requestDone") {
-      const pct = `${Math.round(s.result.confidenceNum * 100)}%`;
-      letterEl.textContent = `Letter detected: ${s.result.detectedLetter}`;
-      confEl.textContent = `Confidence: ${pct}`;
-      handEl.textContent = `Hand detected: ${s.result.handDetected}`;
-    } else {
-      letterEl.textContent = "Letter detected: -";
-      confEl.textContent = "Confidence: -";
-      handEl.textContent = "Hand detected: -";
+        if (s.result && s.status === "requestDone") {
+            const pct = `${Math.round(s.result.confidenceNum * 100)}%`;
+            $letter.textContent = `Letter detected: ${s.result.detectedLetter}`;
+            $conf.textContent = `Confidence: ${pct}`;
+            $hand.textContent = `Hand detected: ${s.result.handDetected}`;
+        } else {
+            $letter.textContent = "Letter detected: -";
+            $conf.textContent = "Confidence: -";
+            $hand.textContent = "Hand detected: -";
+        }
+
+        if (s.status === "error") {
+            $errorMsg.textContent = s.errorMessage || "Unknown error.";
+        }
     }
 
-    // contenido de error
-    if (s.status === "error") {
-      errorMsgEl.textContent = s.errorMessage || "Unknown error.";
-    }
-  }
+    render(AppState.getState());
 
-  // inicial
-  render(AppState.getState());
-
-  // escucha cambios del store (gracias a tu events.d.ts, e.detail ya es AppStateShape)
-  window.addEventListener("stateChange", (e) => render(e.detail));
+    window.addEventListener("stateChange", (e) => render(e.detail));
 </script>
